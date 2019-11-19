@@ -1,0 +1,31 @@
+<style>
+  #doctype-sucks {
+    width: 600px;
+    height: 700px;
+  }
+</style>
+<button id="generate">Generate layouts</button>
+<br />
+<br />
+<iframe id="doctype-sucks"> </iframe>
+
+<script>
+  const setIframe = html => {
+    document.getElementById("doctype-sucks").src =
+      "data:text/html;charset=utf-8," + encodeURI(atob(html));
+  };
+
+  setIframe("base64-iframe-placeholder");
+</script>
+
+<script>
+  document.getElementById("generate").onclick = () => {
+    parent.postMessage({ pluginMessage: { type: "generate-vaadin-ui" } }, "*");
+  };
+
+  onmessage = event => {
+    document
+      .getElementById("doctype-sucks")
+      .contentWindow.postMessage(event.data.pluginMessage, "*");
+  };
+</script>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #vaadin-ui {
+        width: 500px;
+        height: 600px;
+      }
+      #vaadin-ui > div {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <script>
+      "bundle-placeholder";
+
+      "jszip-placeholder";
+
+    </script>
+  </head>
+  <body>
+    <div id="vaadin-ui"></div>
+
+    <script>
+      onmessage = event => {
+        console.log("We have tree ");
+        console.log(event.data);
+        let roots = event.data;
+
+        const atir = window.dtl_fns.createAndAppendChildElements(roots);
+        console.log("We have ATIR: " + JSON.stringify(atir));
+        window.dtl_fns.createAndAppendChildElementsToDOM(
+          document.getElementById("vaadin-ui"),
+          roots
+        );
+
+        window.dtl_fns.exporters.exportToJava({
+          designs: {
+            "does-it-work": {
+              tree: atir,
+              css: ""
+            }
+          },
+          settings: { packageName: "vaadin.figma" }
+        });
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "Designs to Layouts",
+  "id": "775013969147442026",
+  "api": "1.0.0",
+  "main": "plugin/code.js",
+  "ui": "plugin/ui.html"
+}
