@@ -3,35 +3,6 @@ const ipsumLorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
   " "
 );
 
-let suggestions = [
-  {
-    tree: [
-      "vaadin-vertical-layout",
-      "(",
-      "vaadin-button",
-      "(",
-      ")",
-      "vaadin-button",
-      "(",
-      ")",
-      "vaadin-button",
-      "(",
-      ")",
-      "vaadin-button",
-      "(",
-      ")",
-      ")"
-    ],
-    rects: [
-      { left: 51, top: 62, right: 330, bottom: 430 },
-      { left: 94, top: 94, right: 240, bottom: 134 },
-      { left: 96, top: 155, right: 241, bottom: 198 },
-      { left: 103, top: 225, right: 232, bottom: 260 },
-      { left: 105, top: 286, right: 232, bottom: 332 }
-    ]
-  }
-];
-
 const isVerticalLayout = rect => {
   if (!rect.children || rect.children.length < 2) {
     return false;
@@ -272,156 +243,46 @@ export const createAndAppendChildElements = rects => {
   return tree;
 };
 
-// DOM creator
-export const createAndAppendChildElementsToDOM = (parent, rects) => {
-  rects.forEach(rect => {
-    let styles = "";
-    let tagName = rect.snippet ? rect.snippet : "div";
-    tagName = tagName.replace("unide-grid", "vaadin-grid");
-    let el = document.createElement(tagName);
-    if (rect.css_props) {
-      styles = rect.css_props;
-    }
-
-    if (
-      tagName === "vaadin-radio-group" ||
-      tagName === "vaadin-checkbox-group"
-    ) {
-      if (rectRatio(rect) < 1) {
-        el.setAttribute("theme", "vertical");
+export const modelToDOM = (code, target) => {
+  const stack = [];
+  const tree = [];
+  let current = target;
+  code.forEach((str, index) => {
+    const trimmed = str.trim();
+    switch (trimmed) {
+      case "(": {
+        const old = current;
+        tree.push(current);
+        const tag = stack.pop();
+        current = document.createElement(tag);
+        old.appendChild(current);
+        break;
       }
-    }
-
-    if (rect.children) {
-      if (isVerticalLayout(rect)) {
-        rect.children.sort((rectA, rectB) => {
-          return rectA.top - rectB.top;
-        });
-      } else {
-        rect.children.sort((rectA, rectB) => {
-          return rectA.left - rectB.left;
-        });
+      case ")": {
+        current = tree.pop();
+        break;
       }
-    }
-
-    if (tagName === "vaadin-vertical-layout") {
-      rect.children.sort((rectA, rectB) => {
-        return rectA.top - rectB.top;
-      });
-    }
-
-    if (tagName === "vaadin-horizontal-layout") {
-      rect.children.sort((rectA, rectB) => {
-        return rectA.left - rectB.left;
-      });
-    }
-
-    if (tagName === "grid-layout") {
-      el.style.display = "grid";
-      // Sort into left-right and top down order
-      rect.children.sort((rectA, rectB) => {
-        return (
-          rectA.left +
-          (rectA.top - rect.top - ((rectA.top - rect.top) % 50)) * 8192 -
-          (rectB.left +
-            (rectB.top - rect.top - ((rectB.top - rect.top) % 50)) * 8192)
-        );
-      });
-      let columnWidth = 0;
-      let maxColumnWidth = 0;
-      let previous = rect.children[0];
-      rect.children.forEach(rect => {
-        if (previous.left > rect.left) {
-          if (columnWidth > maxColumnWidth) {
-            maxColumnWidth = columnWidth;
+      case "=": {
+        const tos = stack.pop();
+        const nos = stack.pop();
+        if (nos in current) {
+          try {
+            const json = JSON.parse(tos);
+            current[nos] = json;
+          } catch (e) {
+            current[nos] = tos;
+            current.setAttribute(nos, tos);
           }
-          columnWidth = 0;
+        } else {
+          current.setAttribute(nos, tos);
         }
-        columnWidth++;
-        previous = rect;
-      });
-      el.style.gridTemplateColumns = `repeat(${maxColumnWidth}, auto)`;
-    }
 
-    if (tagName === "vaadin-split-layout") {
-      // remove drag handle rect
-      const smallest = getSmallestRect(rect.children);
-      rect.children = rect.children.filter(rect => rect !== smallest);
-      // determine orientation
-      const child = rect.children[0];
-      if (
-        pointInsideRect(child, smallest.left, smallest.top) !==
-        pointInsideRect(child, smallest.left, smallest.bottom)
-      ) {
-        el.setAttribute("orientation", "vertical");
+        break;
       }
-    }
-
-    // Use brute to determine flexbox properties for div
-    if (tagName === "div" && rect.children) {
-      styles = styles + brute(rect.children, rect);
-    }
-
-    // Temporary hardcodings
-    if (tagName == "vaadin-button") {
-      rect.text = "Button";
-      el.setAttribute("theme", "primary");
-    }
-
-    if (tagName == "vaadin-tabs") {
-      rect.text = "Tab name|Tab name|Tab name";
-    }
-
-    // Handle text content in rect
-    if (
-      rect.text &&
-      tagName !== "vaadin-radio-button" &&
-      tagName !== "vaadin-checkbox"
-    ) {
-      if (tagName == "vaadin-grid") {
-        const columnNames = rect.text.split(",");
-        columnNames.forEach(columnName => {
-          const column = document.createElement("vaadin-grid-column");
-          column.setAttribute("path", columnName);
-          column.setAttribute("header", columnName);
-          el.appendChild(column);
-        });
-        let items = [];
-        for (let i = 0; i < 200; i++) {
-          let item = {};
-          columnNames.forEach(columnName => {
-            item[columnName] =
-              ipsumLorem[(Math.random() * ipsumLorem.length) | 0];
-          });
-          items.push(item);
-        }
-        el.items = items;
-      } else if (rect.text.includes(",")) {
-        rect.text.split(",").forEach(str => {
-          let item = document.createElement("vaadin-item");
-          item.textContent = str;
-          el.appendChild(item);
-        });
-      } else if (rect.text.includes("|")) {
-        rect.text.split("|").forEach(str => {
-          let tab = document.createElement("vaadin-tab");
-          tab.textContent = str;
-          el.appendChild(tab);
-        });
-      } else if (rect.text.includes(";")) {
-        el.items = rect.text.split(";");
-      } else {
-        el.textContent = rect.text.replace("#", "");
+      default: {
+        stack.push(trimmed);
       }
-    }
-
-    if (styles.length > 0) {
-      el.setAttribute("style", styles);
-    }
-
-    parent.appendChild(el);
-    if (rect.children) {
-      createAndAppendChildElementsToDOM(el, rect.children);
     }
   });
+  return current;
 };

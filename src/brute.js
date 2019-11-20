@@ -65,7 +65,6 @@ const calc_distance = (p1, p2) => {
 };
 
 export const brute = (rects, parent) => {
-  console.log("So many rects " + rects.length);
   const flex_container = document.createElement("div");
   flex_container.style.display = "flex";
   flex_container.style.width = parent.right - parent.left + "px";
@@ -154,9 +153,6 @@ export const brute = (rects, parent) => {
       flexboxProps[i][1][best[i]] +
       ";";
   }
-  //css_props.width = flex_container.style.width;
-  //css_props.height = flex_container.style.height;
-  //css_props.flexGrow = "1";
 
   const flexItemProps = [
     { "flex-grow": 1, "flex-shrink": 0, "flex-basis": "auto" },
@@ -176,10 +172,8 @@ export const brute = (rects, parent) => {
   let best_item_props = 0;
   for (let rectI = 0; rectI < Math.pow(3, rects.length); rectI++) {
     let index = rectI;
-    console.log("combo is: ");
     for (let j = 0; j < rects.length; j++) {
       Object.assign(flexblocks[j].style, flexItemProps[index % 3]);
-      console.log(words[index % 3]);
       index = (index / 3) | 0;
     }
 
@@ -193,12 +187,9 @@ export const brute = (rects, parent) => {
       distance += calc_distance(fpositions[i], positions[i]);
     }
 
-    console.log("distance is " + distance);
-
     if (distance < best_distance) {
       best_item_props = rectI;
       best_distance = distance;
-      console.log("best item distance " + distance);
     }
   }
 
@@ -206,7 +197,6 @@ export const brute = (rects, parent) => {
   for (let j = 0; j < rects.length; j++) {
     rects[j].css_props = flexItemPropStrings[index % 3];
     index = (index / 3) | 0;
-    console.log("applying " + j);
   }
 
   document.body.removeChild(flex_container);

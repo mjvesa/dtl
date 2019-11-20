@@ -46,13 +46,10 @@ import "@vaadin/vaadin-radio-button/theme/lumo/vaadin-radio-button.js";
 import "@vaadin/vaadin-icons";
 import "file-saver/dist/FileSaver.js";
 import { exportToJava } from "./export/java.js";
-import {
-  createAndAppendChildElements,
-  createAndAppendChildElementsToDOM
-} from "./dtl.js";
+import { modelToDOM, createAndAppendChildElements } from "./dtl.js";
 
 window.dtl_fns = {};
+window.dtl_fns.modelToDOM = modelToDOM;
 window.dtl_fns.createAndAppendChildElements = createAndAppendChildElements;
-window.dtl_fns.createAndAppendChildElementsToDOM = createAndAppendChildElementsToDOM;
 window.dtl_fns.exporters = {};
 window.dtl_fns.exporters.exportToJava = exportToJava;

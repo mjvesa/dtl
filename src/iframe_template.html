@@ -16,6 +16,7 @@
 
       "jszip-placeholder";
 
+
     </script>
   </head>
   <body>
@@ -23,16 +24,10 @@
 
     <script>
       onmessage = event => {
-        console.log("We have tree ");
-        console.log(event.data);
         let roots = event.data;
 
         const atir = window.dtl_fns.createAndAppendChildElements(roots);
-        console.log("We have ATIR: " + JSON.stringify(atir));
-        window.dtl_fns.createAndAppendChildElementsToDOM(
-          document.getElementById("vaadin-ui"),
-          roots
-        );
+        window.dtl_fns.modelToDOM(atir, document.getElementById("vaadin-ui"));
 
         window.dtl_fns.exporters.exportToJava({
           designs: {
