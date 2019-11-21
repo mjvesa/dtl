@@ -134,34 +134,6 @@ export const createAndAppendChildElements = rects => {
       });
     }
 
-    if (tagName === "grid-layout") {
-      styles = styles + "display:grid;";
-      // Sort into left-right and top down order
-      rect.children.sort((rectA, rectB) => {
-        return (
-          rectA.left +
-          (rectA.top - rect.top - ((rectA.top - rect.top) % 50)) * 8192 -
-          (rectB.left +
-            (rectB.top - rect.top - ((rectB.top - rect.top) % 50)) * 8192)
-        );
-      });
-      let columnWidth = 0;
-      let maxColumnWidth = 0;
-      let previous = rect.children[0];
-      rect.children.forEach(rect => {
-        if (previous.left > rect.left) {
-          if (columnWidth > maxColumnWidth) {
-            maxColumnWidth = columnWidth;
-          }
-          columnWidth = 0;
-        }
-        columnWidth++;
-        previous = rect;
-      });
-      styles =
-        styles + `grid-template-columns:repeat(${maxColumnWidth}, auto);`;
-    }
-
     if (tagName === "vaadin-split-layout") {
       // remove drag handle rect
       const smallest = getSmallestRect(rect.children);
@@ -190,41 +162,13 @@ export const createAndAppendChildElements = rects => {
     if (tagName == "vaadin-tabs") {
       rect.text = "Tab name|Tab name|Tab name";
     }
-
-    // Handle text content in rect
-    if (
-      rect.text &&
-      tagName !== "vaadin-radio-button" &&
-      tagName !== "vaadin-checkbox"
-    ) {
-      if (tagName == "unide-grid") {
-        const columns = rect.text.split(",");
-        const columnCaptions = [];
-        columns.forEach(column => {
-          columnCaptions.push({ name: column, path: column });
-        });
-        setAttribute("columnCaptions", JSON.stringify(columnCaptions));
-        const items = [];
-        for (let i = 0; i < 200; i++) {
-          const item = {};
-          columns.forEach(column => {
-            item[column] = ipsumLorem[(Math.random() * ipsumLorem.length) | 0];
-          });
-          items.push(item);
-        }
-        setAttribute("items", JSON.stringify(items));
-      } else if (rect.text.includes(",")) {
-        rect.text.split(",").forEach(str => {
-          children.push("vaadin-item", "(", "textContent", str, "=", ")");
-        });
-      } else if (rect.text.includes("|")) {
+    if (rect.text) {
+      if (rect.text.includes("|")) {
         rect.text.split("|").forEach(str => {
           children.push("vaadin-tab", "(", "textContent", str, "=", ")");
         });
-      } else if (rect.text.includes(";")) {
-        setAttribute("items", JSON.stringify(rect.text.split(";")));
       } else {
-        setAttribute("textContent", rect.text.replace("#", ""));
+        setAttribute("textContent", rect.text);
       }
     }
 

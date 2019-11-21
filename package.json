@@ -5,7 +5,7 @@
   "repository": "https://github.com/mjvesa/dtl",
   "main": "src/libs.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c && node ./script/iframer.js",
     "watch": "rollup -c -w",
     "dev": "npm-run-all --parallel start watch",
     "start": "serve public",
