@@ -1,6 +1,5 @@
 const flexboxProps = [
   ["flex-direction", ["row", "row-reverse", "column", "column-reverse"]],
-  ["flex-wrap", ["nowrap", "wrap", "wrap-reverse"]],
   [
     "justify-content",
     [
@@ -9,11 +8,7 @@ const flexboxProps = [
       "center",
       "space-between",
       "space-around",
-      "space-evenly",
-      "start",
-      "end",
-      "left",
-      "right"
+      "space-evenly"
     ]
   ],
   [
@@ -41,9 +36,6 @@ const flexboxProps = [
       "inherit"
     ]
   ]
-  //  ,
-  //  ["width", ["auto", "100%", "75%", "25%"]],
-  //  ["height", ["auto", "100%", "75%", "25%"]]
 ];
 
 const get_pos = (parentEl, el) => {
@@ -83,9 +75,6 @@ export const brute = (rects, parent) => {
     positions.push(pos);
     const el = document.createElement("div");
     el.style.overflow = "hidden";
-    //el.style.minWidth = "30px"; //rect.right - rect.left + "px";
-    //el.style.minHeight = "30px";
-    // rect.bottom - rect.top + "px";
     el.style.backgroundColor = "blue";
     el.textContent = "Rect";
     flex_container.appendChild(el);
@@ -94,7 +83,7 @@ export const brute = (rects, parent) => {
 
   const indexes = [];
   let total = 1;
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < flexboxProps.length; i++) {
     indexes[i] = 0;
     total *= flexboxProps[i][1].length;
   }
@@ -104,7 +93,7 @@ export const brute = (rects, parent) => {
   let best;
   let best_distance = 100000;
   do {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < flexboxProps.length; i++) {
       flex_container.style[flexboxProps[i][0]] = flexboxProps[i][1][indexes[i]];
     }
 
@@ -142,9 +131,9 @@ export const brute = (rects, parent) => {
     rounds++;
   } while (running);
 
-  let css_props = "display: flex; border: 1px black solid;";
+  let css_props = "display: flex;";
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < flexboxProps.length; i++) {
     flex_container.style[flexboxProps[i][0]] = flexboxProps[i][1][best[i]];
     css_props =
       css_props +
@@ -165,8 +154,6 @@ export const brute = (rects, parent) => {
     "flex: 0 1 auto;",
     "flex: 0 0 0;"
   ];
-
-  const words = ["grow", "shrink", "static"];
 
   best_distance = 1000000;
   let best_item_props = 0;

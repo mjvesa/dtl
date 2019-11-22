@@ -45,7 +45,7 @@ export const exportToJava = project => {
   zip.file("pom.xml", pomXML);
 
   zip.generateAsync({ type: "blob" }).then(content => {
-    saveAs(content, "unide-java-designs.zip");
+    saveAs(content, "vaadin-java-layouts.zip");
   });
 };
 
