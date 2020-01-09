@@ -20,7 +20,7 @@ whose tag is `div`. Each layout can contain components positioned
 either vertically or horizontally. That rule might be relaxed in the future when
 things like grid layout will be available.
 
-# How to install the plugin and conver the example design
+# How to install the plugin and convert the example design
 
 First either clone this repository or download a zip of it via the "clone or download"
 button above. Then import the `example_design.fig` file into figma. To install the plugin,
